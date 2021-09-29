@@ -1,1 +1,3 @@
-# Aprendizjae-Geom-trico-Profundo
+# Aprendizaje Geométrico Profundo
+
+Repositorio para el curso de Aprendizaje Geométrico Profundo...

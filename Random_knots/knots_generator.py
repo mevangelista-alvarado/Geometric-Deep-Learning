@@ -21,7 +21,8 @@ class knots:
 	#noise: flotante, parámetro para introducir ruido blanco
 	def __init__(self, points=2000, sc=10, noise=0.0):
 		super().__init__()
-		self.points = int(points/2)
+		self.total_points = points
+		self.num_points = self.total_points
 		self.sc = sc
 		self.noise = noise
 		self.knot = None
@@ -52,12 +53,12 @@ class knots:
 	    z = lambda t: np.array([Az@np.cos(nz*t + pz)])
 
 	    #Dominio del nudo, círculo [-pi, pi]
-	    S1 = np.linspace(-np.pi, np.pi, self.points)
+	    S1 = np.linspace(-np.pi, np.pi, self.num_points)
 
 	    #Genera las dimensiones del nudo aleatorio
-	    x_t = np.array([x(t) for t in S1]).reshape(self.points)
-	    y_t = np.array([y(t) for t in S1]).reshape(self.points)
-	    z_t = np.array([z(t) for t in S1]).reshape(self.points)
+	    x_t = np.array([x(t) for t in S1]).reshape(self.num_points)
+	    y_t = np.array([y(t) for t in S1]).reshape(self.num_points)
+	    z_t = np.array([z(t) for t in S1]).reshape(self.num_points)
 	    
 	    #Guarda el nudo
 	    self.knot = np.vstack((x_t, y_t, z_t)).T
@@ -68,34 +69,45 @@ class knots:
 	#Genera un número de barras determinado en base al género
 	#genus: entero > 0, determina el género de la variedad.
 	def create_bars_random_knot(self,i,j,k,genus=1):
-	    n = genus
+	    #Escala los puntos 
+	    if genus > 0:
+	    	self.num_points = round(self.total_points/genus)
+	    #Número de barras en base al género
+	    n = genus - 1
 	    #Obtiene un nudo aleatorio y ajusta sus dimensiones
 	    x,y,z = self.create_random_knot(i,j,k)
 	    x_t, y_t, z_t = self.knot[:,0],self.knot[:,1], self.knot[:,2]
-	    x_t, y_t, z_t = x_t.reshape(self.points,1), y_t.reshape(self.points,1), z_t.reshape(self.points,1)
+	    x_t, y_t, z_t = x_t.reshape(self.num_points,1), y_t.reshape(self.num_points,1), z_t.reshape(self.num_points,1)
 	    
-	    #Genera las raíces de la unidad de acuerdo al género
-	    #se generan los puntos antipodas para unir las barras
-	    #Agrega ruido blanco para mover las raíces
-	    points_pos = np.array([np.pi*k/n for k in range(0,n)]) + self.noise*np.random.normal(0.0,1.0, size=n)
-	    points_neg = np.array([-np.pi*k/n for k in range(1,n+1)])[::-1] + self.noise*np.random.normal(0.0,1.0, size=n)
-	    
-	    #Aplica la función que genera los nudos a las raíces
-	    pos_r_x = np.array([x(r) for r in points_pos])
-	    pos_r_y = np.array([y(r) for r in points_pos])
-	    pos_r_z = np.array([z(r) for r in points_pos])
-	    neg_r_x = np.array([x(r) for r in points_neg])
-	    neg_r_y = np.array([y(r) for r in points_neg])
-	    neg_r_z = np.array([z(r) for r in points_neg])
-	    
-	    #Genera las barras a partir de la imagen de las raíces de la unidad
-	    T = np.linspace(0,1,self.points)
-	    bar_x= np.vstack([t*pos_r_x+(1-t)*neg_r_x for t in T])
-	    bar_y= np.vstack([t*pos_r_y+(1-t)*neg_r_y for t in T])
-	    bar_z= np.vstack([t*pos_r_z+(1-t)*neg_r_z for t in T])
-	    #Une las barras al nudo para obtener una nueva variedad (nudo con barras)
-	    mainfold_x, mainfold_y, mainfold_z = np.vstack((x_t,bar_x)), np.vstack((y_t,bar_y)), np.vstack((z_t,bar_z))
-	    
+	    #Si el género es 1, no se generan barras
+	    if n == 0:
+		    mainfold_x, mainfold_y, mainfold_z = x_t, y_t, z_t
+	    #El género mayor a 1
+	    elif n > 0:
+		    #Genera las raíces de la unidad de acuerdo al género
+		    #se generan los puntos antipodas para unir las barras
+		    #Agrega ruido blanco para mover las raíces
+		    points_pos = np.array([np.pi*k/n for k in range(0,n)]) + self.noise*np.random.normal(0.0,1.0, size=n)
+		    points_neg = np.array([-np.pi*k/n for k in range(1,n+1)])[::-1] + self.noise*np.random.normal(0.0,1.0, size=n)
+		    
+		    #Aplica la función que genera los nudos a las raíces
+		    pos_r_x = np.array([x(r) for r in points_pos])
+		    pos_r_y = np.array([y(r) for r in points_pos])
+		    pos_r_z = np.array([z(r) for r in points_pos])
+		    neg_r_x = np.array([x(r) for r in points_neg])
+		    neg_r_y = np.array([y(r) for r in points_neg])
+		    neg_r_z = np.array([z(r) for r in points_neg])
+		    
+		    #Genera las barras a partir de la imagen de las raíces de la unidad
+		    T = np.linspace(0,1,self.num_points)
+		    bar_x= np.vstack([t*pos_r_x+(1-t)*neg_r_x for t in T])
+		    bar_y= np.vstack([t*pos_r_y+(1-t)*neg_r_y for t in T])
+		    bar_z= np.vstack([t*pos_r_z+(1-t)*neg_r_z for t in T])
+		    #Une las barras al nudo para obtener una nueva variedad (nudo con barras)
+		    mainfold_x, mainfold_y, mainfold_z = np.vstack((x_t,bar_x)), np.vstack((y_t,bar_y)), np.vstack((z_t,bar_z))
+	    else:
+	    	raise Exception("Elgénero debe ser un entero positivo diferente de 0.")
+	    	
 	    #Guarda el nudo
 	    self.knot = np.hstack((mainfold_x, mainfold_y, mainfold_z))
 	    #return mainfold_x, mainfold_y, mainfold_z
@@ -106,8 +118,9 @@ class knots:
 	def plot_knot(self,size=1,color='black',bars_color='black'):
 		try:
 			ax = plt.gca(projection='3d')
-			ax.scatter(self.knot[:,0][:self.points], self.knot[:,1][:self.points], self.knot[:,2][:self.points],s=size,c=color)
-			ax.scatter(self.knot[:,0][self.points:], self.knot[:,1][self.points:], self.knot[:,2][self.points:],s=size,c=bars_color)
+			ax.scatter(self.knot[:,0][:self.num_points], self.knot[:,1][:self.num_points], self.knot[:,2][:self.num_points],s=size,c=color)
+			ax.scatter(self.knot[:,0][self.num_points:], self.knot[:,1][self.num_points:], self.knot[:,2][self.num_points:],s=size,c=bars_color)
 			plt.show()
 		except:
 			raise Exception("No se ha generado el nudo")
+			

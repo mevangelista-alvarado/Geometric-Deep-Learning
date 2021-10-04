@@ -27,8 +27,8 @@ class knots:
 		self.noise = noise
 		self.knot = None
 		self.genus = 1
-		self.points_pos = None
-		self.points_neg = None
+		self.points_pos, self.points_neg = None, None
+		self.f_x, self.f_y, self.f_z = None, None, None
 
 	#Genera un nudo aleatorio en base a los parámetros:
 	#i: entero
@@ -66,6 +66,7 @@ class knots:
 	    #Guarda el nudo
 	    self.knot = np.vstack((x_t, y_t, z_t)).T
 	    #Regresa las funciones que generan el nudo
+	    self.f_x, self.f_y, self.f_z = x, y, z
 	    return x,y,z
 
 

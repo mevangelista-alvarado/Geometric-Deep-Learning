@@ -43,7 +43,7 @@ class knot_points_cloud:
 		#numero de puntos
 		self.n = len(points)
 		#Alcance
-		self.r = 1
+		self.r = 0.001
 		#Nudo gordo
 		self.fat_knot = None
 
@@ -105,11 +105,8 @@ class knot_points_cloud:
 		
 	def create_fat_knot(self, num_circ=10):
 		"Función para añadir circulos a los nudos"
-		#Checar si ya se calcularon los normales y binormales
-		if type(self.N) == 'NoneType' and type(self.B) == 'NoneType':
-			self.frenet_serret()
-		else:
-			pass
+		#Chrea marco de frenet-serret
+		self.frenet_serret()
 		
 		#Obtiene el alcance
 		self.get_radius()
@@ -140,4 +137,3 @@ class knot_points_cloud:
 			ax.plot(self.fat_knot[:,0], self.fat_knot[:,1], self.fat_knot[:,2], 'o', markersize=2, color=c, alpha=1)
 		
 		plt.show()
-

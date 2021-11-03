@@ -140,13 +140,13 @@ class knot_points_cloud:
 		plt.show()
 		
 	def save(self, path):
-		knot_object = (self.points,self.n,self.r,self.dX,self.ddX,self.T,self.N,self.B)
+		knot_object = (self.fat_knot, self.points,self.n,self.r,self.dX,self.ddX,self.T,self.N,self.B)
 		fname = open(path,'wb')
 		dump(knot_object,fname)
 		fname.close()
 		
 	def load(self,path):
 		fname = open(path,'rb')
-		self.points, self.n, self.r, self.dX, self.ddX, self.T, self.N, self.B = load(fname)
+		self.fat_knot, self.points, self.n, self.r, self.dX, self.ddX, self.T, self.N, self.B = load(fname)
 		fname.close()
 		

@@ -45,7 +45,7 @@ class knot_points_cloud:
 		#Marco de senet-ferret
 		self.T, self.N, self.B = None, None, None
 		#numero de puntos
-		self.n = len(points)
+		self.n = 0
 		#Alcance
 		self.r = 0.001
 		#Nudo gordo
@@ -55,6 +55,7 @@ class knot_points_cloud:
 		"Función para generar un punto"
 		knot_generator = knots(points=npoints, noise=noise, sc=6)
 		knot_generator.create_bars_random_knot(i,j,k,genus=genus)
+		self.n = len(points)
 		self.knot = knot_generator
 		self.points = knot_generator.knot
 

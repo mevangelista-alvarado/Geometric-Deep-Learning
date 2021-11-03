@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch
 from mpl_toolkits.mplot3d import proj3d
 from pickle import dump, load
+from knot_generator import knots
 
 #Función de normalización
 f = lambda m : m / (np.linalg.norm(m)+1e-100)
@@ -34,9 +35,11 @@ class knot_points_cloud:
 	Args:
 		points (numpy array): puntos del nudo
 	"""
-	def __init__(self, points):
+	def __init__(self): #points
 		super().__init__()
-		self.points = points
+		self.points = None #points
+		#Objeto de nudo
+		self.knot = None
 		#derivadas
 		self.dX, self.ddX = None, None
 		#Marco de senet-ferret
@@ -47,6 +50,13 @@ class knot_points_cloud:
 		self.r = 0.001
 		#Nudo gordo
 		self.fat_knot = None
+		
+	def get_points(self,npoints=1000,genus=1,noise=0.1,i=1,j=1,k=2):
+		"Función para generar un punto"
+		knot_generator = knots(points=npoints, noise=noise, sc=6)
+		knot_generator.create_bars_random_knot(i,j,k,genus=genus)
+		self.knot = knot_generator
+		self.points = knot_generator.knot
 
 	def frenet_serret(self):
 		"Función para generar el marco de Frenet-Serret desde una nube de puntos (parametrizada)"

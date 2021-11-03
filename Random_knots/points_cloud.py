@@ -55,7 +55,7 @@ class knot_points_cloud:
 		"Función para generar un punto"
 		knot_generator = knots(points=npoints, noise=noise, sc=6)
 		knot_generator.create_bars_random_knot(i,j,k,genus=genus)
-		self.n = len(points)
+		self.n = len(knot_generator.knot)
 		self.knot = knot_generator
 		self.points = knot_generator.knot
 

@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch
 from mpl_toolkits.mplot3d import proj3d
+from pickle import dump, load
 
 #Función de normalización
 f = lambda m : m / (np.linalg.norm(m)+1e-100)
@@ -137,3 +138,15 @@ class knot_points_cloud:
 			ax.plot(self.fat_knot[:,0], self.fat_knot[:,1], self.fat_knot[:,2], 'o', markersize=2, color=c, alpha=1)
 		
 		plt.show()
+		
+	def save(self, path):
+		knot_object = (self.points,self.n,self.r,self.dX,self.ddX,self.T,self.N,self.B)
+		fname = open(path,'wb')
+		dump(knot_object,fname)
+		fname.close()
+		
+	def load(self,path):
+		fname = open(path,'rb')
+		self.points, self.n, self.r, self.dX, self.ddX, self.T, self.N, self.B = load(fname)
+		fname.close()
+		

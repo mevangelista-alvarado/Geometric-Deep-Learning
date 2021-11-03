@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch
 from mpl_toolkits.mplot3d import proj3d
 from pickle import dump, load
-from knot_generator import knots
+from knots_generator import knots
 
 #Función de normalización
 f = lambda m : m / (np.linalg.norm(m)+1e-100)
